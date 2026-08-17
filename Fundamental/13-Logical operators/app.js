@@ -3,17 +3,16 @@
  * LOGICAL OPERATORS
  * ============================================================================
  *
- * JavaScript provides four logical operators:
+ * JavaScript provides three main logical operators:
  *
  *    ||  (OR)
  *    &&  (AND)
  *    !   (NOT)
- *    ??  (Nullish Coalescing)
  *
  * Logical operators can be used with values of any type,
  * not only boolean values.
  *
- * They can also return values of any type.
+ * Their result can also be any type of value.
  *
  * ============================================================================
  * TRUTHY AND FALSY VALUES
@@ -52,12 +51,6 @@
  * In JavaScript, || does more than boolean comparison.
  *
  * It returns the first TRUTHY value.
- *
- * Example:
- *
- *    let result = null || "Hello";
- *
- *    // result = "Hello"
  *
  *
  * Algorithm:
@@ -191,7 +184,6 @@
  *
  *    a || (b && c)
  *
- *
  * ============================================================================
  * NOT OPERATOR !
  * ============================================================================
@@ -238,60 +230,6 @@
  *    Boolean(value);
  *
  * ============================================================================
- * NULLISH COALESCING OPERATOR ??
- * ============================================================================
- *
- * The ?? operator provides default values,
- * but only when the value is null or undefined.
- *
- *
- * Difference:
- *
- *    || checks all falsy values.
- *
- *    ?? checks only:
- *
- *       null
- *       undefined
- *
- *
- * Example:
- *
- *    let count = 0;
- *
- *    count || 10;
- *    // 10
- *
- *    count ?? 10;
- *    // 0
- *
- *
- * Because 0 is falsy for ||,
- * but it is a valid value for ??.
- *
- * ============================================================================
- * || VS ??
- * ============================================================================
- *
- * Example:
- *
- *    let value = "";
- *
- *    value || "Guest";
- *    // "Guest"
- *
- *    value ?? "Guest";
- *    // ""
- *
- *
- * Example:
- *
- *    let age = null;
- *
- *    age ?? 18;
- *    // 18
- *
- * ============================================================================
  * COMMON RULES TO REMEMBER
  * ============================================================================
  *
@@ -300,8 +238,6 @@
  *    &&  -> first falsy value
  *
  *    !   -> reverse boolean value
- *
- *    ??  -> default value only for null/undefined
  *
  *
  * Use:
@@ -314,9 +250,6 @@
  *
  *    &&
  *    when an action depends on a condition.
- *
- *    ??
- *    when you only want to handle missing values.
  *
  * ============================================================================
  */
