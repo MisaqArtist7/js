@@ -1,122 +1,366 @@
 /**
  * ============================================================================
- * TYPE CONVERSION
+ * COMPARISONS
  * ============================================================================
  *
- * Type conversion means changing a value from one data type to another.
+ * Comparison operators compare two values and always return a Boolean:
  *
- * JavaScript can perform conversions in two ways:
+ *    true
+ *    false
  *
- * 1. Implicit conversion (automatic)
- *    JavaScript converts values automatically when needed.
+ * Comparison operators:
  *
- *    "6" / "2"; // 3
- *
- * 2. Explicit conversion (manual)
- *    We explicitly convert a value using functions such as:
- *
- *    String(value);
- *    Number(value);
- *    Boolean(value);
- *
- * ============================================================================
- * STRING CONVERSION
- * ============================================================================
- *
- * Convert a value to a string:
- *
- *    String(value);
- *
- * Examples:
- *
- *    String(true);      // "true"
- *    String(false);     // "false"
- *    String(null);      // "null"
- *    String(undefined); // "undefined"
- *    String(123);       // "123"
- *
- * alert() automatically converts values to strings for display.
- *
- * ============================================================================
- * NUMBER CONVERSION
- * ============================================================================
- *
- * Convert a value to a number:
- *
- *    Number(value);
- *
- * Examples:
- *
- *    Number("123");     // 123
- *    Number("   123 "); // 123
- *    Number("");        // 0
- *    Number("   ");     // 0
- *    Number("123abc");  // NaN
- *
- *    Number(true);      // 1
- *    Number(false);     // 0
+ *    >   Greater than
+ *    <   Less than
+ *    >=  Greater than or equal
+ *    <=  Less than or equal
+ *    ==  Equality
+ *    !=  Not equal
+ *    === Strict equality
+ *    !== Strict not equal
  *
  * IMPORTANT:
  *
- *    Number(null);      // 0
- *    Number(undefined); // NaN
+ *    =  means assignment
+ *    == means equality comparison
  *
- * prompt() returns user input as a string.
+ * Example:
  *
- * To convert prompt input to a number:
- *
- *    let age = Number(prompt("How old are you?"));
+ *    let x = 5;  // assignment
+ *    x == 5;     // comparison
  *
  * ============================================================================
- * BOOLEAN CONVERSION
+ * BOOLEAN RESULT
  * ============================================================================
  *
- * Convert a value to a boolean:
+ * All comparison operators return true or false.
  *
- *    Boolean(value);
+ * Examples:
  *
- * FALSY VALUES:
+ *    2 > 1;  // true
+ *    2 == 1; // false
+ *    2 != 1; // true
+ *
+ * A comparison result can also be stored in a variable:
+ *
+ *    let result = 5 > 4;
+ *
+ *    // result = true
+ *
+ * ============================================================================
+ * STRING COMPARISON
+ * ============================================================================
+ *
+ * Strings are compared character-by-character in lexicographical order.
+ *
+ * Examples:
+ *
+ *    "Z" > "A";        // true
+ *    "Glow" > "Glee";  // true
+ *    "Bee" > "Be";     // true
+ *
+ * The comparison starts from the first character.
+ *
+ * If the characters are equal, JavaScript moves to the next character.
+ *
+ * Example:
+ *
+ *    "Glow" > "Glee";
+ *
+ *    G == G
+ *    l == l
+ *    o > e
+ *
+ *    // true
+ *
+ * If one string ends before the other and all previous characters
+ * were equal, the longer string is greater.
+ *
+ * IMPORTANT:
+ *
+ * String comparison is case-sensitive.
+ *
+ *    "a" > "A"; // true
+ *
+ * ============================================================================
+ * COMPARISON OF DIFFERENT TYPES
+ * ============================================================================
+ *
+ * When values of different types are compared, JavaScript may convert
+ * them to numbers.
+ *
+ * Examples:
+ *
+ *    "2" > 1;    // true
+ *    "01" == 1;  // true
+ *
+ *    // "2" becomes 2
+ *    // "01" becomes 1
+ *
+ * Boolean values are converted to numbers:
+ *
+ *    true  -> 1
+ *    false -> 0
+ *
+ * Examples:
+ *
+ *    true == 1;   // true
+ *    false == 0;  // true
+ *
+ * ============================================================================
+ * IMPORTANT STRING EXCEPTION
+ * ============================================================================
+ *
+ * When both values are strings, they are compared as strings.
+ *
+ * Example:
+ *
+ *    "2" > "12"; // true
+ *
+ * The first characters are compared:
+ *
+ *    "2" > "1"
+ *
+ * Therefore, the result is true.
+ *
+ * But:
+ *
+ *    "2" > 12; // false
+ *
+ * Here the values have different types, so numeric conversion happens:
+ *
+ *    2 > 12; // false
+ *
+ * ============================================================================
+ * LOOSE EQUALITY ==
+ * ============================================================================
+ *
+ * The == operator checks equality after possible type conversion.
+ *
+ * Examples:
+ *
+ *    0 == false; // true
+ *    "" == false; // true
+ *    "5" == 5;   // true
+ *
+ * Type conversion can sometimes produce unexpected results.
+ *
+ * Example:
+ *
+ *    let a = 0;
+ *    let b = "0";
+ *
+ *    Boolean(a); // false
+ *    Boolean(b); // true
+ *
+ *    a == b; // true
+ *
+ * The equality check and Boolean conversion follow different rules.
+ *
+ * ============================================================================
+ * STRICT EQUALITY ===
+ * ============================================================================
+ *
+ * The === operator checks equality without type conversion.
+ *
+ * The values must have the same type and the same value.
+ *
+ * Examples:
+ *
+ *    5 === 5;     // true
+ *    "5" === 5;   // false
+ *    0 === false; // false
+ *
+ * In the last example:
+ *
+ *    0     -> Number
+ *    false -> Boolean
+ *
+ * Different types mean the result is false.
+ *
+ * Strict inequality uses !==:
+ *
+ *    5 !== 4;     // true
+ *    5 !== 5;     // false
+ *    "5" !== 5;   // true
+ *
+ * IMPORTANT:
+ *
+ *    ==  -> equality with possible type conversion
+ *    === -> strict equality without type conversion
+ *
+ * ============================================================================
+ * NULL AND UNDEFINED
+ * ============================================================================
+ *
+ * null and undefined have different types.
+ *
+ * Therefore:
+ *
+ *    null === undefined; // false
+ *
+ * However, == has a special rule:
+ *
+ *    null == undefined; // true
+ *
+ * They are equal to each other with ==,
+ * but they are not equal to other values.
+ *
+ * Examples:
+ *
+ *    null == undefined; // true
+ *    null == 0;         // false
+ *    null == false;     // false
+ *    null == "";        // false
+ *
+ * ============================================================================
+ * NULL WITH MATHEMATICAL COMPARISONS
+ * ============================================================================
+ *
+ * With >, <, >= and <=, null is converted to the number 0.
+ *
+ * Examples:
+ *
+ *    null > 0;  // false
+ *    null >= 0; // true
+ *
+ * However, == follows its special null/undefined rule:
+ *
+ *    null == 0; // false
+ *
+ * Therefore, these results are possible:
+ *
+ *    null > 0;  // false
+ *    null == 0; // false
+ *    null >= 0; // true
+ *
+ * IMPORTANT:
+ *
+ * Equality == and mathematical comparisons do not follow the same rules.
+ *
+ * ============================================================================
+ * UNDEFINED AND COMPARISONS
+ * ============================================================================
+ *
+ * undefined should be compared with special care.
+ *
+ * With mathematical comparisons, undefined becomes NaN.
+ *
+ *    undefined > 0; // false
+ *    undefined < 0; // false
+ *
+ * NaN returns false for mathematical comparisons.
+ *
+ * Equality behaves differently:
+ *
+ *    undefined == 0;      // false
+ *    undefined == null;   // true
+ *
+ * ============================================================================
+ * UNARY PLUS WITH COMPARISONS
+ * ============================================================================
+ *
+ * Unary + converts a value to a number before the comparison.
+ *
+ * Example:
+ *
+ *    +"\n0\n"; // 0
+ *
+ * Therefore:
+ *
+ *    null === +"\n0\n";
+ *
+ * Becomes:
+ *
+ *    null === 0;
+ *
+ * The result is:
  *
  *    false
- *    0
- *    ""
- *    null
- *    undefined
- *    NaN
  *
- * Examples:
+ * Because null and 0 have different types.
  *
- *    Boolean(0);         // false
- *    Boolean("");        // false
- *    Boolean(null);      // false
- *    Boolean(undefined); // false
- *    Boolean(NaN);       // false
+ * ============================================================================
+ * IMPORTANT NULL / UNDEFINED RULES
+ * ============================================================================
  *
- * All other values are generally TRUTHY.
+ * Remember these special cases:
  *
- * IMPORTANT:
+ *    null == undefined;  // true
  *
- *    Boolean("0"); // true
- *    Boolean(" "); // true
+ *    null == 0;          // false
+ *    null === 0;         // false
  *
- * Any non-empty string is true, even "0", "false", or spaces.
+ *    null >= 0;          // true
+ *    null > 0;           // false
+ *
+ *    undefined == null;  // true
+ *    undefined == 0;     // false
+ *
+ * ============================================================================
+ * AVOID COMPARISON PROBLEMS
+ * ============================================================================
+ *
+ * Treat comparisons involving null or undefined with special care.
+ *
+ * Avoid using:
+ *
+ *    >  <  >=  <=
+ *
+ * with variables that may contain null or undefined,
+ * unless you are sure about the expected behavior.
+ *
+ * If a variable can contain null or undefined,
+ * check for those values separately when necessary.
  *
  * ============================================================================
  * QUICK REVIEW
  * ============================================================================
  *
- * String(value)  -> Converts to String
- * Number(value)  -> Converts to Number
- * Boolean(value) -> Converts to Boolean
+ * Comparison operators:
+ *
+ *    >   <   >=   <=
+ *    ==  !=
+ *    === !==
+ *
+ * All comparison operators return:
+ *
+ *    true
+ *    false
+ *
+ * String comparison:
+ *
+ *    "a" < "b"; // true
+ *
+ * Strings are compared character-by-character.
+ *
+ * Different types:
+ *
+ *    "2" > 1; // true
+ *
+ * ==:
+ *
+ *    May perform type conversion.
+ *
+ * ===:
+ *
+ *    Does not perform type conversion.
+ *
+ * null and undefined:
+ *
+ *    null == undefined;  // true
+ *    null === undefined; // false
  *
  * IMPORTANT EXCEPTIONS TO REMEMBER:
  *
- * Number(undefined); // NaN
- * Number(null);      // 0
+ *    "2" > "12";  // true
+ *    "2" > 12;    // false
  *
- * Boolean("0");      // true
- * Boolean(" ");      // true
+ *    null == 0;   // false
+ *    null >= 0;   // true
  *
- * 0  -> false
- * "0" -> true
+ *    undefined == null;  // true
+ *    undefined == 0;     // false
+ *
+ * ============================================================================
  */
