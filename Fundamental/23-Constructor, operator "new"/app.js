@@ -1,5 +1,447 @@
 /*
  * ============================================================================
+ * 🚀 OPTIONAL CHAINING "?."
+ * ============================================================================
+ *
+ * Optional chaining (`?.`) is used to safely access properties and methods
+ * when a value might be `null` or `undefined`.
+ *
+ * Instead of throwing an error, JavaScript stops the evaluation and returns
+ * `undefined`.
+ *
+ */
+
+
+/* ============================================================================
+ * 1. THE PROBLEM
+ * ============================================================================
+ */
+
+// Accessing a nested property normally can cause an error
+// if one of the objects in the chain doesn't exist.
+
+let user = {};
+
+console.log(user.address.city);
+
+// Error:
+// Cannot read properties of undefined (reading 'city')
+
+
+// Why?
+//
+// First:
+//
+//     user.address
+//
+// returns:
+//
+//     undefined
+//
+// Then JavaScript tries:
+//
+//     undefined.city
+//
+// Which causes an error.
+
+
+
+/* ============================================================================
+ * 2. OPTIONAL CHAINING WITH "?."
+ * ============================================================================
+ */
+
+// Optional chaining allows us to safely access nested properties.
+
+let person = {};
+
+console.log(person?.address?.city); // undefined
+
+
+// If `person` exists, JavaScript checks `address`.
+//
+// If `address` is `null` or `undefined`,
+// the rest of the chain is skipped.
+//
+// No error is thrown.
+
+
+
+/* ============================================================================
+ * 3. OPTIONAL CHAINING WITH EXISTING PROPERTIES
+ * ============================================================================
+ */
+
+let userInfo = {
+    name: "Ali",
+    address: {
+        city: "Baku"
+    }
+};
+
+console.log(userInfo?.name); // Ali
+
+console.log(userInfo?.address?.city); // Baku
+
+
+// Since all properties exist, `?.` works just like normal property access.
+
+
+
+/* ============================================================================
+ * 4. OPTIONAL CHAINING ONLY CHECKS NULL AND UNDEFINED
+ * ============================================================================
+ */
+
+// `?.` does NOT check for every falsy value.
+//
+// It specifically checks for:
+//
+//     null
+//     undefined
+//
+// Other values such as:
+//
+//     0
+//     ""
+//     false
+//
+// are NOT treated as nullish.
+
+let value = 0;
+
+console.log(value?.toString()); // "0"
+
+
+// `0` exists, so JavaScript continues evaluating the expression.
+
+
+
+/* ============================================================================
+ * 5. OPTIONAL CHAINING VS "&&"
+ * ============================================================================
+ */
+
+// Before optional chaining, developers often used `&&`
+// to safely access nested properties.
+
+let account = {
+    profile: {
+        name: "Ali"
+    }
+};
+
+console.log(
+    account &&
+    account.profile &&
+    account.profile.name
+); // Ali
+
+
+// With optional chaining, the same idea is much cleaner:
+
+console.log(account?.profile?.name); // Ali
+
+
+// Important difference:
+//
+// `&&` checks truthy / falsy values.
+//
+// `?.` checks specifically for `null` / `undefined`.
+
+
+
+/* ============================================================================
+ * 6. OPTIONAL CHAINING MUST BE USED WHERE NEEDED
+ * ============================================================================
+ */
+
+// Optional chaining only protects the part of the chain
+// where `?.` is used.
+
+let customer = null;
+
+
+// Safe:
+console.log(customer?.address?.city); // undefined
+
+
+// The first `?.` safely stops the chain because `customer` is null.
+
+
+
+/* ============================================================================
+ * 7. OPTIONAL CHAINING WITH UNDECLARED VARIABLES
+ * ============================================================================
+ */
+
+// `?.` does NOT make an undeclared variable safe.
+//
+// If the variable itself doesn't exist, JavaScript throws a ReferenceError.
+//
+// Example:
+//
+// console.log(user?.name);
+//
+// If `user` was never declared:
+//
+// ReferenceError: user is not defined
+
+
+// But if the variable exists and contains `undefined`, it is safe:
+
+let userData;
+
+console.log(userData?.name); // undefined
+
+
+
+/* ============================================================================
+ * 8. SHORT-CIRCUITING
+ * ============================================================================
+ */
+
+// When optional chaining encounters `null` or `undefined`,
+// JavaScript stops evaluating the rest of the chain.
+//
+// This behavior is called "short-circuiting".
+
+let profile = null;
+let counter = 0;
+
+profile?.sayHi(counter++);
+
+console.log(counter); // 0
+
+
+// `profile` is null.
+//
+// Therefore `sayHi()` is never called,
+// and `counter++` is never evaluated.
+
+
+
+/* ============================================================================
+ * 9. OPTIONAL METHOD CALL "?.()"
+ * ============================================================================
+ */
+
+// `?.()` is used when a method might not exist.
+//
+// It calls the method only if it exists.
+
+let admin = {
+
+    sayHi() {
+        console.log("I am admin");
+    }
+
+};
+
+admin.sayHi?.(); // I am admin
+
+
+// If the method doesn't exist:
+
+let guest = {};
+
+guest.sayHi?.();
+
+
+// Nothing happens.
+// No error is thrown.
+//
+// This is useful when a method is optional.
+
+
+
+/* ============================================================================
+ * 10. OPTIONAL BRACKET ACCESS "?.[]"
+ * ============================================================================
+ */
+
+// Optional chaining also works with bracket notation.
+//
+// This is useful when the property name is stored in a variable.
+
+let key = "name";
+
+let personInfo = {
+    name: "Ali"
+};
+
+console.log(personInfo?.[key]); // Ali
+
+
+// If the object doesn't exist:
+
+let personData = null;
+
+console.log(personData?.[key]); // undefined
+
+
+// Without optional chaining:
+//
+// personData[key]
+//
+// would cause an error.
+
+
+
+/* ============================================================================
+ * 11. OPTIONAL CHAINING WITH "DELETE"
+ * ============================================================================
+ */
+
+// Optional chaining can also be used with `delete`.
+
+let employee = {
+    name: "Ali"
+};
+
+delete employee?.name;
+
+console.log(employee); // {}
+
+
+// If the object is null or undefined,
+// `delete` does not throw an error.
+
+let employee2 = null;
+
+delete employee2?.name;
+
+
+
+/* ============================================================================
+ * 12. OPTIONAL CHAINING CANNOT BE USED FOR ASSIGNMENT
+ * ============================================================================
+ */
+
+// Optional chaining is used for safely READING properties,
+// not assigning values to them.
+//
+// This is NOT allowed:
+//
+// user?.name = "Ali";
+//
+// SyntaxError
+
+
+// If you want to assign a value,
+// first make sure the object exists.
+
+let newUser = {};
+
+if (newUser) {
+    newUser.name = "Ali";
+}
+
+console.log(newUser.name); // Ali
+
+
+
+/* ============================================================================
+ * 13. OPTIONAL CHAINING WITH DEEPLY NESTED OBJECTS
+ * ============================================================================
+ */
+
+// Optional chaining becomes especially useful
+// with deeply nested objects.
+
+let data = {
+    user: {
+        profile: {
+            social: {
+                instagram: "@ali"
+            }
+        }
+    }
+};
+
+console.log(
+    data?.user?.profile?.social?.instagram
+); // @ali
+
+
+// If any part of the chain is null or undefined,
+// JavaScript stops and returns undefined.
+
+let emptyData = {};
+
+console.log(
+    emptyData?.user?.profile?.social?.instagram
+); // undefined
+
+
+
+/* ============================================================================
+ * 14. OPTIONAL CHAINING + NULLISH COALESCING
+ * ============================================================================
+ */
+
+// Optional chaining and nullish coalescing (`??`) are often used together.
+//
+// `?.` safely accesses a property.
+//
+// `??` provides a default value if the result is null or undefined.
+
+let accountInfo = {};
+
+let city = accountInfo?.address?.city ?? "Unknown";
+
+console.log(city); // Unknown
+
+
+// Think of it like this:
+//
+//     ?.  → "Safely access this property."
+//
+//     ??  → "If the result is null/undefined, use this value instead."
+
+
+
+/* ============================================================================
+ * SUMMARY
+ * ============================================================================
+ *
+ * - Optional chaining uses the `?.` operator.
+ *
+ * - It safely accesses properties that might be `null` or `undefined`.
+ *
+ * - If the value before `?.` is null or undefined,
+ *   the rest of the chain is skipped.
+ *
+ * - The result of a skipped optional chain is `undefined`.
+ *
+ * - `?.` checks only for `null` and `undefined`,
+ *   not all falsy values.
+ *
+ * - Optional chaining can be used with properties:
+ *
+ *     obj?.property
+ *
+ * - Optional chaining can be used with bracket notation:
+ *
+ *     obj?.[property]
+ *
+ * - Optional chaining can be used with methods:
+ *
+ *     obj.method?.()
+ *
+ * - Optional chaining supports short-circuiting.
+ *
+ * - `?.` does not protect undeclared variables.
+ *
+ * - Optional chaining cannot be used on the left side of an assignment.
+ *
+ * - `?.` is often combined with `??`:
+ *
+ *     user?.address?.city ?? "Unknown"
+ *
+ * ============================================================================
+ *//*
+ * ============================================================================
  * 🚀 CONSTRUCTOR FUNCTIONS AND "NEW"
  * ============================================================================
  *
@@ -313,4 +755,6 @@ UserCheck();     // undefined
  *
  * ============================================================================
  */
+
+
 
