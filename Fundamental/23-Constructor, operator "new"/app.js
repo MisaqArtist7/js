@@ -20,7 +20,7 @@
 // Accessing a nested property normally can cause an error
 // if one of the objects in the chain doesn't exist.
 
-let user = {};
+// let user = {};
 
 console.log(user.address.city);
 
@@ -125,11 +125,11 @@ console.log(value?.toString()); // "0"
 // Before optional chaining, developers often used `&&`
 // to safely access nested properties.
 
-let account = {
-    profile: {
-        name: "Ali"
-    }
-};
+// let account = {
+//     profile: {
+//         name: "Ali"
+//     }
+// };
 
 console.log(
     account &&
