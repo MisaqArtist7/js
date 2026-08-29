@@ -3,11 +3,7 @@
  * 🚀 ARRAYS
  * ============================================================================
  *
- * Arrays are used to store ordered collections of values.
- *
- * Example:
- *
- *     let fruits = ["Apple", "Orange", "Plum"];
+ * Arrays store ordered collections of values.
  *
  * Array indexes start from 0.
  *
@@ -15,7 +11,7 @@
 
 
 /* ============================================================================
- * 1. CREATING AN ARRAY
+ * 1. CREATING AND ACCESSING ARRAYS
  * ============================================================================
  */
 
@@ -23,45 +19,22 @@ let fruits = ["Apple", "Orange", "Plum"];
 
 console.log(fruits[0]); // Apple
 console.log(fruits[1]); // Orange
-console.log(fruits[2]); // Plum
+
+// Change an element:
+
+fruits[0] = "Banana";
 
 
-// Arrays can contain different types of values.
-
-let mixed = ["Ali", 25, true, { city: "Baku" }];
-
-
-
-/* ============================================================================
- * 2. LENGTH
- * ============================================================================
- */
-
-// `length` gives the size of the array.
+// `length` returns the number of elements.
 
 console.log(fruits.length);
 // 3
 
 
-
-/* ============================================================================
- * 3. ACCESSING THE LAST ELEMENT
- * ============================================================================
- */
-
-// Traditional way:
-
-console.log(fruits[fruits.length - 1]);
-// Plum
-
-
-// Modern way:
+// `at()` can use negative indexes.
 
 console.log(fruits.at(-1));
 // Plum
-
-
-// `at()` supports negative indexes.
 
 console.log(fruits.at(-2));
 // Orange
@@ -69,49 +42,107 @@ console.log(fruits.at(-2));
 
 
 /* ============================================================================
- * 4. PUSH / POP
+ * 2. ADDING AND REMOVING ELEMENTS
  * ============================================================================
  */
 
-// `push()` adds elements to the end.
+// End of the array:
 
-fruits.push("Lemon");
-
-console.log(fruits);
-// ["Apple", "Orange", "Plum", "Lemon"]
+fruits.push("Lemon"); // Add
+fruits.pop();         // Remove
 
 
-// `pop()` removes and returns the last element.
+// Beginning of the array:
+
+fruits.unshift("Apple"); // Add
+fruits.shift();          // Remove
+
+
+// `pop()` and `shift()` return the removed element.
 
 let last = fruits.pop();
-
-console.log(last);
-// Lemon
-
-console.log(fruits);
-// ["Apple", "Orange", "Plum"]
+let first = fruits.shift();
 
 
 
 /* ============================================================================
- * 5. SHIFT / UNSHIFT
+ * 3. SPLICE()
  * ============================================================================
  */
 
-// `shift()` removes and returns the first element.
+// `splice()` can add, remove or replace elements.
+//
+//     splice(start, deleteCount, ...items)
 
-let first = fruits.shift();
-
-console.log(first);
-// Apple
+let colors = ["Red", "Green", "Blue"];
 
 
-// `unshift()` adds elements to the beginning.
+// Remove:
 
-fruits.unshift("Banana");
+colors.splice(1, 1);
 
-console.log(fruits);
-// ["Banana", "Orange", "Plum"]
+console.log(colors);
+// ["Red", "Blue"]
+
+
+// Add:
+
+colors.splice(1, 0, "Yellow");
+
+console.log(colors);
+// ["Red", "Yellow", "Blue"]
+
+
+// Replace:
+
+colors.splice(1, 1, "Green");
+
+console.log(colors);
+// ["Red", "Green", "Blue"]
+
+
+
+/* ============================================================================
+ * 4. SLICE()
+ * ============================================================================
+ */
+
+// `slice()` returns a copy of part of an array.
+//
+// IMPORTANT:
+// It does NOT modify the original array.
+
+let numbers = [1, 2, 3, 4, 5];
+
+let part = numbers.slice(1, 4);
+
+console.log(part);
+// [2, 3, 4]
+
+console.log(numbers);
+// [1, 2, 3, 4, 5]
+
+
+// Copy the entire array:
+
+let copy = numbers.slice();
+
+
+
+/* ============================================================================
+ * 5. CONCAT()
+ * ============================================================================
+ */
+
+// `concat()` combines arrays and returns a new array.
+
+let a = [1, 2];
+let b = [3, 4];
+
+let result = a.concat(b);
+
+console.log(result);
+// [1, 2, 3, 4]
 
 
 
@@ -121,12 +152,30 @@ console.log(fruits);
  */
 
 // Arrays are special objects.
-//
-// Therefore, assigning an array to another variable
-// copies the reference, not the array itself.
+
+console.log(typeof []);
+// "object"
+
+
+// Use `Array.isArray()` to check if a value is an array.
+
+console.log(Array.isArray([]));
+// true
+
+console.log(Array.isArray({}));
+// false
+
+
+
+/* ============================================================================
+ * 7. ARRAYS USE REFERENCES
+ * ============================================================================
+ */
+
+// Assigning an array copies the reference,
+// not the array itself.
 
 let arr1 = [1, 2, 3];
-
 let arr2 = arr1;
 
 arr2.push(4);
@@ -138,37 +187,44 @@ console.log(arr1 === arr2);
 // true
 
 
+// Two separate arrays are NOT equal,
+// even if they contain the same values.
 
-/* ============================================================================
- * 7. LOOPING THROUGH ARRAYS
- * ============================================================================
- */
-
-// Traditional `for` loop:
-
-for (let i = 0; i < fruits.length; i++) {
-    console.log(fruits[i]);
-}
-
-
-// Modern `for...of` loop:
-
-for (let fruit of fruits) {
-    console.log(fruit);
-}
-
-
-// Avoid `for...in` for arrays.
-// It is designed for objects and can iterate over other properties too.
+// console.log([1, 2] === [1, 2]);
+// false
 
 
 
 /* ============================================================================
- * 8. MULTIDIMENSIONAL ARRAYS
+ * 8. LOOPING THROUGH ARRAYS
  * ============================================================================
  */
 
-// An array can contain other arrays.
+// Classic `for` loop:
+
+for (let i = 0; i < numbers.length; i++) {
+    console.log(numbers[i]);
+}
+
+
+// `for...of` is useful when we only need the values:
+
+for (let number of numbers) {
+    console.log(number);
+}
+
+
+// `for...in` is generally NOT recommended for arrays.
+// It is designed for object properties.
+
+
+
+/* ============================================================================
+ * 9. MULTIDIMENSIONAL ARRAYS
+ * ============================================================================
+ */
+
+// Arrays can contain other arrays.
 
 let matrix = [
     [1, 2, 3],
@@ -182,17 +238,31 @@ console.log(matrix[0][1]);
 
 
 /* ============================================================================
- * 9. CLEARING AN ARRAY
+ * 10. JOIN()
+ * ============================================================================
+ */
+
+// `join()` converts array elements into a string.
+
+let names = ["Ali", "Sara", "Reza"];
+
+console.log(names.join(", "));
+// "Ali, Sara, Reza"
+
+
+
+/* ============================================================================
+ * 11. CLEARING AN ARRAY
  * ============================================================================
  */
 
 // Setting length to 0 removes all elements.
 
-let numbers = [1, 2, 3, 4, 5];
+let values = [1, 2, 3];
 
-numbers.length = 0;
+values.length = 0;
 
-console.log(numbers);
+console.log(values);
 // []
 
 
@@ -201,33 +271,34 @@ console.log(numbers);
  * SUMMARY
  * ============================================================================
  *
- * - Arrays store ordered collections of values.
+ * - Arrays store ordered collections.
  *
  * - Indexes start from 0.
  *
- * - `length` gives the array length.
+ * - `length` → number of elements.
  *
- * - `at(-1)` gets the last element.
+ * - `at(-1)` → last element.
  *
- * - Add/remove from the end:
+ * - `push()` / `pop()` → work with the end.
  *
- *     push()
- *     pop()
+ * - `unshift()` / `shift()` → work with the beginning.
  *
- * - Add/remove from the beginning:
+ * - `splice()` → add, remove or replace elements.
  *
- *     unshift()
- *     shift()
+ * - `slice()` → copy part of an array without modifying the original.
  *
- * - Arrays are objects and are copied by reference.
+ * - `concat()` → combine arrays.
  *
- * - Use `for...of` to loop through array values.
+ * - `Array.isArray()` → check if a value is an array.
  *
- * - Avoid `for...in` with arrays.
+ * - Arrays are objects and are assigned by reference.
+ *
+ * - `for...of` → loop through array values.
+ *
+ * - `join()` → convert array elements into a string.
  *
  * - Arrays can contain other arrays.
  *
- * - `arr.length = 0` clears an array.
- *
  * ============================================================================
  */
+
