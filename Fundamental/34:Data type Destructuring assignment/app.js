@@ -37,9 +37,9 @@ console.log(age); // 18
 // Object → بر اساس نام property
 
 const user = {
-  name: "Ali",
-  age: 25,
-  city: "Berlin"
+    name: "Ali",
+    age: 25,
+    city: "Berlin"
 };
 
 const { name, age, city } = user;
@@ -66,7 +66,7 @@ console.log(otherData);
 // Destructuring در Function
 
 function showUser({ name, age }) {
-  console.log(name, age);
+    console.log(name, age);
 }
 
 showUser(user);
@@ -75,7 +75,7 @@ showUser(user);
 // Destructuring در for...of
 
 for (const [key, value] of Object.entries(user)) {
-  console.log(key, value);
+    console.log(key, value);
 }
 
 
