@@ -75,7 +75,6 @@ const pretty = JSON.stringify(
 
 console.log(pretty);
 
-
 // JSON معمولاً برای انتقال داده بین Front-end و Backend استفاده می‌شود.
 //
 // JavaScript Object
@@ -91,4 +90,3 @@ console.log(pretty);
 // JSON.parse()
 //      ↓
 // JavaScript Object
-
