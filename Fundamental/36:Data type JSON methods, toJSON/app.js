@@ -1,7 +1,6 @@
 // ==================== JSON ====================
 
-// JSON (JavaScript Object Notation) یک فرمت متنی برای
-// ذخیره و انتقال داده است.
+// JSON (JavaScript Object Notation) 
 
 // JSON.stringify() → JavaScript value → JSON string
 

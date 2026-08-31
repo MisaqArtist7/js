@@ -1,12 +1,12 @@
 // ==================== Recursion ====================
 
-// Recursion یعنی یک function خودش را صدا بزند.
-// هر recursion معمولاً دو بخش دارد:
-// 1. Base case → شرط توقف
-// 2. Recursive step → صدا زدن دوباره‌ی function با مسئله‌ی ساده‌تر
+// Recursion means a function calls itself.
+// Every recursion usually has two parts:
+// 1. Base case → stops the recursion
+// 2. Recursive step → calls the function again with a simpler problem
 
 
-// مثال ساده
+// Simple example
 
 function countDown(n) {
   if (n === 0) {
@@ -21,7 +21,7 @@ function countDown(n) {
 countDown(3);
 
 
-// مثال محاسبه‌ی توان
+// Example: calculating a power
 
 function pow(x, n) {
   if (n === 1) {
@@ -35,19 +35,34 @@ console.log(pow(2, 4));
 // 16
 
 
-// هر recursive call یک execution context ایجاد می‌کند
-// و contextهای فعال در Call Stack نگه‌داری می‌شوند.
+// Each recursive call creates an execution context.
+// Active contexts are stored in the Call Stack.
 //
 // pow(2, 3)
 //   → pow(2, 2)
 //      → pow(2, 1)
 //         → Base case
 //
-// سپس نتیجه‌ها از داخل Stack به بیرون برمی‌گردند.
+// After reaching the base case, the results return
+// through the Call Stack.
 
 
-// Recursion برای ساختارهای تودرتو بسیار مناسب است.
-// مثال: محاسبه‌ی مجموع salary در یک ساختار department.
+/*
+  Recursion is especially useful for nested structures.
+
+  Example:
+  Tree
+     A
+    / \
+   B   C
+  / \
+ D   E
+
+  Each node can contain more nodes with the same structure.
+*/
+
+
+// Recursion can also be used with nested objects.
 
 function sumSalaries(department) {
   if (Array.isArray(department)) {
@@ -67,18 +82,15 @@ function sumSalaries(department) {
 }
 
 
-// Recursion می‌تواند برای Tree، HTML structure و
-// سایر Recursive Data Structures استفاده شود.
+// Recursion can be converted to a loop in many cases,
+// but it is often cleaner for nested or recursive data structures.
 
 
-// خلاصه:
+// Summary:
 //
-// Recursion → function خودش را صدا می‌زند.
-// Base case → شرط توقف.
-// Recursive step → call ساده‌تر.
-// Call Stack → نگه‌داری execution contextها.
-// Recursion Depth → بیشترین تعداد callهای تو در تو.
-//
-// هر recursion را می‌توان به loop تبدیل کرد،
-// اما برای ساختارهای تودرتو recursion معمولاً خواناتر است.
+// Recursion      → a function calls itself
+// Base case      → stops the recursion
+// Recursive step → calls the function with a simpler problem
+// Call Stack     → stores active function calls
+// Recursion Depth → maximum number of nested calls
 
