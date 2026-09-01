@@ -1,129 +1,148 @@
-// ==================== Function Prototype ====================
+// ==================== Native Prototypes ====================
 
-// Every regular function has a "prototype" property.
+// JavaScript built-in objects also use prototypes.
 //
-// "prototype" is an object that is used when
-// creating objects with "new".
-
-function User(name) {
-
-  this.name = name;
-
-}
+// Examples:
+// → Object.prototype
+// → Array.prototype
+// → String.prototype
+// → Function.prototype
 
 
-// ==================== Prototype Methods ====================
+// ==================== Object.prototype ====================
 
-// Methods can be added to the function's prototype.
-//
-// This allows all created objects to share the same method.
+const user = {};
 
-User.prototype.sayHi = function () {
+console.log(user.toString());
 
-  console.log(`Hi, ${this.name}`);
+// "toString" is not inside user.
+// It is inherited from Object.prototype.
 
-};
+console.log(
+  Object.getPrototypeOf(user) === Object.prototype
+);
+
+// true
 
 
-const user1 = new User("Misaq");
-const user2 = new User("Ali");
+// ==================== Array.prototype ====================
 
-user1.sayHi(); // Hi, Misaq
-user2.sayHi(); // Hi, Ali
+const numbers = [1, 2, 3];
+
+console.log(numbers.push);
+
+// "push" comes from Array.prototype.
+
+console.log(
+  Object.getPrototypeOf(numbers) === Array.prototype
+);
+
+// true
 
 
 // ==================== Prototype Chain ====================
 
-// Objects created with "new" get the function's prototype
-// as their [[Prototype]].
+// Built-in objects also have a prototype chain.
 //
-// user1
+// numbers
 //   ↓
-// User.prototype
+// Array.prototype
 //   ↓
 // Object.prototype
 //   ↓
 // null
 
 
-// ==================== Shared Methods ====================
+// ==================== Method Lookup ====================
 
-// "sayHi" exists only once in User.prototype.
+// If a method exists in a closer prototype,
+// JavaScript uses that version first.
+
+const numbers2 = [1, 2, 3];
+
+console.log(numbers2.toString());
+
+// Array.prototype.toString()
+// is used before Object.prototype.toString.
+
+
+// ==================== Primitive Prototypes ====================
+
+// Primitives can also use prototype methods.
 //
-// user1 and user2 both use the same method.
+// String → String.prototype
+// Number → Number.prototype
+// Boolean → Boolean.prototype
 
-console.log(user1.sayHi === user2.sayHi);
-// true
+const text = "hello";
 
+console.log(text.toUpperCase());
 
-// ==================== Own vs Prototype ====================
-
-// "name" is an own property of each object.
-
-console.log(user1.hasOwnProperty("name"));
-// true
-
-// "sayHi" is inherited from the prototype.
-
-console.log(user1.hasOwnProperty("sayHi"));
-// false
+// toUpperCase comes from String.prototype.
 
 
-// ==================== prototype vs [[Prototype]] ====================
+// ==================== null & undefined ====================
 
-// User.prototype
-// → A property of the User function.
-//
-// user1.[[Prototype]]
-// → The internal prototype of user1.
-//
-// After using "new":
-//
-// user1.[[Prototype]] === User.prototype
-
-console.log(
-  Object.getPrototypeOf(user1) === User.prototype
-);
-
-// true
+// null and undefined have no wrapper objects
+// and no prototypes.
 
 
-// ==================== Constructor ====================
+// ==================== Modifying Native Prototypes ====================
 
-// Every normal function has a "prototype" object
-// with a "constructor" property pointing back
-// to the function itself.
+// Native prototypes can be modified,
+// but this is generally NOT recommended.
 
-console.log(User.prototype.constructor === User);
-// true
+String.prototype.sayHi = function () {
+
+  console.log(`Hi ${this}`);
+
+};
+
+"Hello".sayHi();
 
 
-// ==================== Arrow Functions ====================
+// ==================== Method Borrowing ====================
 
-// Arrow functions do not have a "prototype" property.
+// A method from one prototype can sometimes
+// be borrowed and used by another object.
 
-const arrow = () => {};
+const obj = {
 
-console.log(arrow.prototype);
-// undefined
+  0: "Hello",
+
+  1: "World",
+
+  length: 2
+
+};
+
+obj.join = Array.prototype.join;
+
+console.log(obj.join(" "));
+
+// "Hello World"
 
 
 // ==================== Summary ====================
 
-// function.prototype
-// → Object used as the prototype for objects
-//   created with "new".
-//
-// [[Prototype]]
-// → Internal link from an object to its prototype.
-//
-// new User()
-// → Creates an object whose [[Prototype]]
-//   points to User.prototype.
-//
-// Prototype methods
-// → Shared by all objects created from the constructor.
-//
-// Own property
-// → Belongs directly to the created object.
+// Built-in prototypes
+// → Store shared methods.
+
+// Array.prototype
+// → Methods for arrays.
+
+// String.prototype
+// → Methods for strings.
+
+// Object.prototype
+// → Common methods for objects.
+
+// Primitive values
+// → Can access methods through wrapper prototypes.
+
+// Native prototypes
+// → Can be modified, but usually should not be.
+
+// Method borrowing
+// → Using a method from another prototype/object.
 
