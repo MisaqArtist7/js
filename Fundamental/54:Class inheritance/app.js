@@ -1,209 +1,166 @@
-// ==================== Class Inheritance ====================
+// ==================== extends: Step by Step ====================
 
-// One class can extend another class,
-// building new functionality on top of existing one.
-
-
-// ==================== The "extends" Keyword ====================
+// extends connects two prototypes together into ONE chain.
+// It does NOT copy methods — it just links where JS should look next.
 
 class Animal {
   constructor(name) {
-    this.speed = 0;
     this.name = name;
   }
-  run(speed) {
-    this.speed = speed;
-    console.log(`${this.name} runs with speed ${this.speed}.`);
-  }
-  stop() {
-    this.speed = 0;
-    console.log(`${this.name} stands still.`);
+  run() {
+    console.log(`${this.name} runs`);
   }
 }
 
 class Rabbit extends Animal {
   hide() {
-    console.log(`${this.name} hides!`);
+    console.log(`${this.name} hides`);
   }
 }
 
 const rabbit = new Rabbit("White Rabbit");
 
-rabbit.run(5);  // White Rabbit runs with speed 5.
-rabbit.hide();  // White Rabbit hides!
-
-// Rabbit objects can use BOTH:
-// - their own methods (hide)
-// - inherited methods from Animal (run, stop)
-
-
-// ==================== How "extends" Works Internally ====================
-
-// extends sets:
-// Rabbit.prototype.[[Prototype]] = Animal.prototype
+// What happens when you call rabbit.run():
 //
-// So if a method isn't found on Rabbit.prototype,
-// JS looks it up on Animal.prototype next.
+// 1. Look on the object itself (rabbit)        → not found
+// 2. Look on Rabbit.prototype                  → not found (only "hide" is there)
+// 3. Look on Animal.prototype (linked by extends) → FOUND → run()
 
-console.log(Object.getPrototypeOf(Rabbit.prototype) === Animal.prototype);
-// true
+rabbit.run();   // works, comes from Animal.prototype
+rabbit.hide();  // works, defined directly on Rabbit.prototype
 
 
 // ==================== Overriding a Method ====================
 
-// If Child defines its own method with the same name,
-// it replaces (shadows) the parent's version.
+// Redefining a method in the child class fully replaces the parent's version
+// for objects of that child class.
 
-class Rabbit2 extends Animal {
-  stop() {
-    console.log("Rabbit2 has its own stop, not Animal's");
+class RabbitOverride extends Animal {
+  run() {
+    console.log("Overridden — this run() replaces Animal's run()");
   }
 }
 
 
-// ==================== super.method() ====================
+// ==================== super.method() — Extend, Don't Just Replace ====================
 
-// Used to call the PARENT's version of a method,
-// usually to extend it rather than fully replace it.
+// Use super.method() when you want to build ON TOP of
+// the parent's behavior, not fully throw it away.
 
-class Rabbit3 extends Animal {
+class RabbitExtend extends Animal {
   hide() {
     console.log(`${this.name} hides!`);
   }
-
   stop() {
-    super.stop();   // run Animal's stop() first
-    this.hide();    // then add extra behavior
+    // no "stop" defined on Animal in this trimmed example,
+    // but the pattern is:
+    // super.stop();  → run parent's version first
+    this.hide();       // → then add extra behavior
   }
 }
 
-const r3 = new Rabbit3("White Rabbit");
-r3.run(5);
-r3.stop();
-// White Rabbit runs with speed 5.
-// White Rabbit stands still.
-// White Rabbit hides!
 
+// ==================== super() in Constructors — The Rule ====================
 
-// ==================== Arrow Functions Have No "super" ====================
+// Rule: if a child class defines its OWN constructor,
+// it MUST call super() before using `this`.
 
-// Arrow functions don't have their own `super`.
-// They use `super` from the surrounding (enclosing) method — this is fine:
-
-class Rabbit4 extends Animal {
-  stop() {
-    setTimeout(() => super.stop(), 1000); // works: super comes from stop()
-  }
-}
-
-// A regular function here would throw: "Unexpected super"
-// setTimeout(function() { super.stop() }, 1000); // ❌ error
-
-
-// ==================== super() — Calling the Parent Constructor ====================
-
-// Rule: a derived class's constructor MUST call super()
-// before it can use `this`.
-
-class Rabbit5 extends Animal {
+class RabbitWithConstructor extends Animal {
   constructor(name, earLength) {
-    super(name);         // must run first
-    this.earLength = earLength; // now `this` exists, safe to use
+    super(name);                  // ① must come first
+    this.earLength = earLength;   // ② only now is `this` usable
   }
 }
 
-const r5 = new Rabbit5("White Rabbit", 10);
-console.log(r5.name);      // White Rabbit
-console.log(r5.earLength); // 10
-
-// Without super(name) first → ReferenceError: this is not defined
+const r1 = new RabbitWithConstructor("White Rabbit", 10);
+console.log(r1.name, r1.earLength); // White Rabbit 10
 
 
-// ==================== Why super() Is Required ====================
+// ==================== Why super() Is Mandatory (the actual reason) ====================
 
-// A derived constructor has an internal flag: [[ConstructorKind]] = "derived"
+// Normal class (not extending anything):
+//   `new` automatically creates {} and assigns it to `this`
+//   BEFORE the constructor body runs.
 //
-// - A normal constructor: `new` creates {} and sets it as `this` automatically.
-// - A derived constructor: does NOT create `this` on its own.
-//   It expects the parent constructor (via super()) to create it.
+// Derived class (extends something):
+//   `new` does NOT create `this` automatically.
+//   The engine waits for super() to do that job
+//   (because super() runs the parent constructor,
+//    which is the one that actually creates the object).
 //
-// So no super() call → no `this` object exists yet → error if you touch `this`.
+// So touching `this` before calling super() in a derived
+// constructor means `this` doesn't exist yet → ReferenceError.
 
 
-// ==================== Default Constructor When None Is Written ====================
+// ==================== Field vs Method Override — The Surprising Difference ====================
 
-// If a class extends another and defines NO constructor,
-// JS generates this automatically:
+// This is the trickiest part of class inheritance in JS.
 
-class RabbitDefault extends Animal {
-  // equivalent to:
-  // constructor(...args) {
-  //   super(...args);
-  // }
-}
+// --- FIELDS: parent constructor sees the PARENT's own field value ---
 
-
-// ==================== Tricky Note: Overriding Class Fields ====================
-
-// Class FIELDS behave differently from METHODS when overridden.
-// This is a JS-specific quirk.
-
-class AnimalF {
+class AnimalField {
   name = "animal";
   constructor() {
-    console.log(this.name);
+    console.log(this.name); // (*)
   }
 }
 
-class RabbitF extends AnimalF {
+class RabbitField extends AnimalField {
   name = "rabbit";
+  // no own constructor → super(...args) is called implicitly
 }
 
-new AnimalF(); // animal
-new RabbitF(); // animal  ← NOT "rabbit"! (surprising)
+new AnimalField(); // animal
+new RabbitField(); // animal ← NOT "rabbit", even though Rabbit overrides it!
 
-// Why? Field initialization order:
-// - Base class: fields init BEFORE constructor body runs
-// - Derived class: fields init RIGHT AFTER super() call
+// Reason — field initialization ORDER:
+//   Base class:     fields set BEFORE constructor body runs
+//   Derived class:  fields set IMMEDIATELY AFTER super() finishes
 //
-// So when Animal's constructor runs during `new RabbitF()`,
-// Rabbit's own fields haven't been set yet — only Animal's exist.
+// Timeline for `new RabbitField()`:
+//   1. super() is called → runs AnimalField's constructor
+//   2. Inside that constructor, this.name is read at line (*)
+//   3. At this point, RabbitField's own fields haven't been
+//      assigned yet (that happens only after super() returns)
+//   4. So this.name still equals AnimalField's own field: "animal"
 
-// Compare with METHODS — these behave as expected (no surprise):
 
-class AnimalM {
+// --- METHODS: parent constructor sees the CHILD's overridden version ---
+
+class AnimalMethod {
   showName() {
     console.log("animal");
   }
   constructor() {
-    this.showName();
+    this.showName(); // uses whatever showName is at call time
   }
 }
 
-class RabbitM extends AnimalM {
+class RabbitMethod extends AnimalMethod {
   showName() {
     console.log("rabbit");
   }
 }
 
-new AnimalM(); // animal
-new RabbitM(); // rabbit  ← works as expected
+new AnimalMethod(); // animal
+new RabbitMethod(); // rabbit ← works as most people would expect
 
-// Fix for the fields quirk: use methods or getters/setters
-// instead of relying on overridden fields inside a parent constructor.
+// Reason: methods live on the prototype and are available
+// immediately — there's no "not assigned yet" moment like with fields.
+
+// PRACTICAL TAKEAWAY:
+// If a parent constructor needs to use a value that a child
+// might override, use a METHOD or GETTER — not a field.
 
 
-// ==================== [[HomeObject]] (Advanced / Internals) ====================
+// ==================== [[HomeObject]] — How "super" Actually Resolves ====================
 
-// How does `super` actually know which prototype to look at?
-// It's not based on `this` — it's based on a hidden property: [[HomeObject]].
-//
-// When a function is written as a method (method() {...}),
-// JS remembers the object it was defined on, as [[HomeObject]].
-// super uses THAT to find the parent method — not this.__proto__.
+// Question: how does `super.method()` know WHICH prototype to look at?
+// Answer: NOT via `this`. Via a hidden internal property: [[HomeObject]].
 
-// This is why copying a method with `super` inside it to another
-// object can break — [[HomeObject]] stays pointed at the original object.
+// Every method written with shorthand syntax method() {...}
+// (in a class OR a plain object) remembers the object/class
+// it was defined on. super uses THAT to find the parent method.
 
 const animalObj = {
   sayHi() { console.log("I'm an animal"); }
@@ -211,91 +168,79 @@ const animalObj = {
 
 const rabbitObj = {
   __proto__: animalObj,
-  sayHi() { super.sayHi(); } // [[HomeObject]] = rabbitObj
+  sayHi() { super.sayHi(); } // [[HomeObject]] of this sayHi = rabbitObj
 };
+
+rabbitObj.sayHi(); // "I'm an animal" — works correctly
+
+
+// CONSEQUENCE: methods with `super` inside are NOT safely copyable
+// between objects — [[HomeObject]] can never be changed.
 
 const plantObj = {
   sayHi() { console.log("I'm a plant"); }
 };
 
 const treeObj = {
-  sayHi: rabbitObj.sayHi // copied method — [[HomeObject]] is still rabbitObj!
+  __proto__: plantObj,
+  sayHi: rabbitObj.sayHi // copying a method that uses super — risky!
 };
-Object.setPrototypeOf(treeObj, plantObj);
 
 treeObj.sayHi();
-// "I'm an animal" — wrong result, because [[HomeObject]] didn't change
+// "I'm an animal" — WRONG result.
+// [[HomeObject]] is still rabbitObj, so super still points to animalObj,
+// completely ignoring treeObj's real prototype (plantObj).
 
-// [[HomeObject]] only applies to shorthand methods (foo() {...}),
-// NOT to function-property syntax (foo: function() {...}).
+// Note: [[HomeObject]] only applies to shorthand methods (foo() {...}),
+// not to function-property syntax (foo: function() {...}).
 
 
-// ==================== Real Example ====================
+// ==================== Arrow Functions: No Own "this" or "super" ====================
 
-// Extending a base Clock class with extra behavior (custom tick precision)
+// Arrow functions borrow BOTH `this` and `super` from
+// whatever scope they were defined in.
 
-class Clock {
-  constructor({ template }) {
-    this.template = template;
-  }
-  render() {
-    const date = new Date();
-    console.log(this.template.replace("h", date.getHours()));
-  }
-  start() {
-    this.render();
-    this.timer = setInterval(() => this.render(), 1000);
-  }
+class RabbitArrow extends Animal {
   stop() {
-    clearInterval(this.timer);
+    setTimeout(() => {
+      // super here = same super as in stop() → totally fine
+      console.log(`${this.name} eventually stops`);
+    }, 1000);
   }
 }
 
-class ExtendedClock extends Clock {
-  constructor(options) {
-    super(options);                 // must call first
-    const { precision = 1000 } = options;
-    this.precision = precision;
-  }
-  start() {
-    this.render();
-    this.timer = setInterval(() => this.render(), this.precision);
-  }
-}
-
-const fastClock = new ExtendedClock({ template: "h:m:s", precision: 200 });
-// fastClock.start();
+// A regular function() {} here would throw "Unexpected super"
+// if it tried to use super — because plain functions
+// have no [[HomeObject]] of their own.
 
 
 // ==================== Summary ====================
 
-// class Child extends Parent
-// → Child.prototype.[[Prototype]] = Parent.prototype
-// → Child inherits Parent's methods automatically.
+// extends
+// → Links Child.prototype.[[Prototype]] to Parent.prototype.
+// → Method lookup walks up this chain until found.
 
 // Overriding a method
-// → Just redefine it in Child. Fully replaces parent's version.
+// → Just redefine it — full replacement.
 
 // super.method()
-// → Calls the parent's version of a method (used to extend, not just replace).
+// → Call parent's version explicitly, usually to extend behavior.
 
-// super(...)
-// → Calls the parent constructor. REQUIRED before using `this`
-//   in any constructor of a class that extends another.
+// super() in constructor
+// → MANDATORY in a derived class's own constructor, before using `this`.
+// → Because derived constructors don't create `this` themselves —
+//   they rely on the parent constructor (via super) to do it.
 
-// No constructor in Child?
-// → JS auto-generates: constructor(...args) { super(...args); }
-
-// Class fields vs methods when overridden:
-// → Methods: parent constructor sees the CHILD's overridden version.
-// → Fields: parent constructor sees its OWN (parent) field value,
-//   because child fields init only after super() finishes.
+// Fields vs methods on override:
+// → Fields: parent constructor sees PARENT's own field (init timing issue).
+// → Methods: parent constructor sees CHILD's override (no timing issue).
+// → Fix: prefer methods/getters over fields for anything a child might override
+//   and that the parent constructor needs to read.
 
 // [[HomeObject]]
-// → Hidden property set on methods (not plain function properties).
-// → super uses it to resolve the parent prototype.
-// → Copying a method with `super` inside to another object breaks it,
-//   because [[HomeObject]] can't change.
+// → Hidden link every shorthand method has to its defining object/class.
+// → super uses it, not `this`, to resolve the parent.
+// → Copying such a method elsewhere keeps the OLD [[HomeObject]] — unsafe.
 
 // Arrow functions
-// → No own `this` or `super` — they inherit both from the enclosing scope.
+// → No own `this`/`super` — inherit both from the enclosing method/scope.
