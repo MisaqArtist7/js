@@ -42,8 +42,8 @@ console.log(value); // 20
 "use strict";
 
 eval(`
-  let x = 10;
-  var y = 20;
+    let x = 10;
+    var y = 20;
 `);
 
 console.log(typeof x); // "undefined"
