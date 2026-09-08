@@ -1,121 +1,138 @@
 /**
 
 * ============================================================================
-* MODIFYING THE DOCUMENT
+* STYLES AND CLASSES
 * ============================================================================
 *
-* DOM can be dynamically changed using JavaScript.
+* JavaScript can change CSS classes and inline styles of DOM elements.
 *
 * ============================================================================
-* CREATE ELEMENT
+* className
 * ============================================================================
 *
-* document.createElement("div")
+* `className` represents the entire `class` attribute.
 *
-* Creates a new Element in memory.
-* It does NOT automatically add the element to the document.
+* element.className = "menu active";
 *
-* Example:
-*
-* const div = document.createElement("div");
-* div.textContent = "Hello";
-* document.body.append(div);
+* Setting className replaces ALL existing classes.
 *
 * ============================================================================
-* INSERT ELEMENTS
+* classList
 * ============================================================================
 *
-* parent.prepend(node)
-* → Inserts inside parent, at the beginning.
+* `classList` is used to manage individual CSS classes.
 *
-* parent.append(node)
-* → Inserts inside parent, at the end.
+* element.classList.add("active");
+* → Adds a class.
 *
-* element.before(node)
-* → Inserts outside the element, before it.
+* element.classList.remove("active");
+* → Removes a class.
 *
-* element.after(node)
-* → Inserts outside the element, after it.
+* element.classList.toggle("active");
+* → Adds the class if it doesn't exist.
+* → Removes it if it already exists.
 *
-* ============================================================================
-* INSERT HTML
-* ============================================================================
+* element.classList.contains("active");
+* → Returns true/false depending on whether the class exists.
 *
-* element.insertAdjacentHTML(position, html)
+* Multiple classes can be handled at once:
 *
-* Positions:
+* element.classList.add("active", "large");
+* element.classList.remove("active", "large");
 *
-* "beforebegin" → before the element
-* "afterbegin"  → inside, at the beginning
-* "beforeend"   → inside, at the end
-* "afterend"    → after the element
-*
-* Difference:
-*
-* element.append("<b>Hello</b>");
-* → Inserts plain text.
-*
-* element.insertAdjacentHTML("beforeend", "<b>Hello</b>");
-* → Parses and inserts HTML.
+* `classList` is a DOMTokenList and can be iterated.
 *
 * ============================================================================
-* REMOVE
+* style
 * ============================================================================
 *
-* element.remove()
+* `element.style` is used to read or change INLINE CSS styles.
 *
-* Removes the element from the DOM.
+* element.style.color = "red";
+* element.style.backgroundColor = "black";
 *
-* ============================================================================
-* MOVE ELEMENTS
-* ============================================================================
+* CSS properties using `-` become camelCase in JavaScript:
 *
-* Appending an existing Node moves it instead of copying it.
-*
-* box1.append(element);
-* box2.append(element);
-*
-* The element ends up inside `box2`.
-*
-* A DOM Node can only have one parent at a time.
+* background-color → backgroundColor
+* font-size        → fontSize
 *
 * ============================================================================
-* CLONE NODE
+* cssText
 * ============================================================================
 *
-* element.cloneNode(true)
-* → Copies the element and all descendants.
+* `style.cssText` can set multiple inline styles at once.
 *
-* element.cloneNode(false)
-* → Copies only the element itself.
+* element.style.cssText = `
+* ```
+    color: red;
+  ```
+* ```
+    font-size: 20px;
+  ```
+* `;
+*
+* Setting cssText replaces the existing inline style value.
 *
 * ============================================================================
-* DOCUMENTFRAGMENT
+* REMOVE STYLE
 * ============================================================================
 *
-* DocumentFragment is a temporary container for DOM nodes.
+* element.style.color = "";
 *
-* const fragment = new DocumentFragment();
+* Or:
 *
-* Nodes can be built inside it and then inserted into the document.
+* element.style.removeProperty("color");
 *
-* When the fragment is appended, its children are inserted,
-* while the fragment itself is not added to the DOM.
+* ============================================================================
+* CSS CUSTOM PROPERTIES
+* ============================================================================
+*
+* CSS variables can be changed with setProperty():
+*
+* element.style.setProperty("--main-color", "red");
+*
+* Get their value with:
+*
+* element.style.getPropertyValue("--main-color");
+*
+* ============================================================================
+* getComputedStyle()
+* ============================================================================
+*
+* `element.style` only contains INLINE styles.
+*
+* To get the final CSS values calculated by the browser:
+*
+* const styles = getComputedStyle(element);
+*
+* styles.color;
 *
 * ============================================================================
 * MAIN MENTAL MODEL
 * ============================================================================
 *
-* createElement()        → Create in memory
-* prepend()              → Insert inside, first
-* append()               → Insert inside, last
-* before()               → Insert outside, before
-* after()                → Insert outside, after
-* insertAdjacentHTML()   → Insert HTML
-* remove()               → Remove from DOM
-* cloneNode(true)        → Copy with descendants
-* append(existingNode)   → Move the Node
-* DocumentFragment       → Temporary container
+* className
+* ```
+    → Manage the entire class attribute.
+  ```
+*
+* classList
+* ```
+    → Add / remove / toggle / check individual classes.
+  ```
+*
+* style
+* ```
+    → Change inline CSS.
+  ```
+*
+* getComputedStyle()
+* ```
+    → Read the final computed CSS.
+  ```
+*
+* In real projects, prefer changing classes for UI states
+* and let CSS control the visual appearance.
 *
 
 */
