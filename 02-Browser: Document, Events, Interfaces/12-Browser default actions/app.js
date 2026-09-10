@@ -1,176 +1,152 @@
 /**
  * ============================================================================
- * EVENT DELEGATION
+ * BROWSER DEFAULT ACTIONS
  * ============================================================================
  *
- * Event Delegation
- * → A pattern where one handler on a parent handles events
- *   from many child elements.
+ * Many browser events automatically trigger a default browser action.
  *
- * It works mainly because of Event Bubbling.
+ * Examples:
  *
- * ============================================================================
- * BASIC PATTERN
- * ============================================================================
+ *   click on <a>
+ *   → navigation
  *
- * Instead of:
+ *   submit
+ *   → form submission
  *
- *   buttons.forEach(button => {
- *       button.addEventListener("click", handler);
- *   });
+ *   click on checkbox
+ *   → check / uncheck
  *
- * We can use:
+ *   contextmenu
+ *   → browser context menu
  *
- *   container.addEventListener("click", (event) => {
- *       // handle child
- *   });
- *
- * The event bubbles from the child to the parent.
+ *   keydown
+ *   → may insert a character or perform another action
  *
  * ============================================================================
- * EVENT.TARGET
+ * PREVENT DEFAULT ACTION
  * ============================================================================
  *
- * event.target
- * → The element where the event originally happened.
+ * event.preventDefault()
+ * → Prevents the browser's default action.
  *
  * Example:
  *
- *   container.addEventListener("click", (event) => {
- *       console.log(event.target);
+ *   link.addEventListener("click", (event) => {
+ *       event.preventDefault();
  *   });
  *
  * ============================================================================
- * MATCHES
+ * RETURN FALSE
  * ============================================================================
  *
- *   if (event.target.matches("button")) {
- *       // clicked element is a button
- *   }
+ * return false can prevent the default action when the handler
+ * is assigned through on<event>.
  *
- * matches() checks whether an element matches a CSS selector.
+ * Example:
+ *
+ *   link.onclick = function () {
+ *       return false;
+ *   };
+ *
+ * But with addEventListener():
+ *
+ *   link.addEventListener("click", () => {
+ *       return false;
+ *   });
+ *
+ * return false is ignored.
+ *
+ * Prefer event.preventDefault() with addEventListener().
  *
  * ============================================================================
- * CLOSEST
+ * FOLLOW-UP EVENTS
  * ============================================================================
  *
- * The target may be a nested element:
+ * Some events lead to other events through their default action.
+ *
+ * Example:
+ *
+ *   mousedown
+ *      ↓
+ *   focus
+ *
+ * Preventing mousedown can prevent the following focus.
+ *
+ * ============================================================================
+ * PASSIVE HANDLER
+ * ============================================================================
+ *
+ *   element.addEventListener("touchmove", handler, {
+ *       passive: true
+ *   });
+ *
+ * passive: true tells the browser that the handler
+ * will NOT call preventDefault().
+ *
+ * This allows the browser to perform actions such as scrolling
+ * without waiting for the handler.
+ *
+ * ============================================================================
+ * DEFAULT PREVENTED
+ * ============================================================================
+ *
+ * event.defaultPrevented
+ *
+ *   false → default action was not prevented.
+ *   true  → default action was prevented.
+ *
+ * This can be used to communicate that an event
+ * has already been handled.
+ *
+ * ============================================================================
+ * PREVENT DEFAULT VS STOP PROPAGATION
+ * ============================================================================
+ *
+ * event.preventDefault()
+ * → Stops the browser's default behavior.
+ *
+ * event.stopPropagation()
+ * → Stops the event from propagating through the DOM.
+ *
+ * They are completely different concepts.
+ *
+ * ============================================================================
+ * SEMANTIC HTML
+ * ============================================================================
+ *
+ * Don't replace semantic HTML with JavaScript unnecessarily.
+ *
+ * Use:
+ *
+ *   <a>
+ *   → for navigation
  *
  *   <button>
- *       <span>Delete</span>
- *   </button>
+ *   → for actions
  *
- * Clicking <span> makes:
- *
- *   event.target → span
- *
- * We can find the button with:
- *
- *   const button = event.target.closest("button");
- *
- * ============================================================================
- * CONTAINS
- * ============================================================================
- *
- * After using closest(), make sure the element belongs
- * to the intended container.
- *
- *   const element = event.target.closest(".item");
- *
- *   if (!element) return;
- *   if (!container.contains(element)) return;
- *
- * This is especially important when nested structures exist.
- *
- * ============================================================================
- * DYNAMIC ELEMENTS
- * ============================================================================
- *
- * Event Delegation works with elements added later.
- *
- *   container.addEventListener("click", handler);
- *
- * New children do not need their own event listeners.
- *
- * This makes delegation useful for dynamic UIs.
- *
- * ============================================================================
- * DATA-ACTION
- * ============================================================================
- *
- * We can describe an action using data-* attributes:
- *
- *   <button data-action="save">Save</button>
- *
- * Then:
- *
- *   const action = event.target.dataset.action;
- *
- * The action can be used to call the corresponding method.
- *
- * ============================================================================
- * BEHAVIOR PATTERN
- * ============================================================================
- *
- * data-* attributes can describe reusable behaviors.
- *
- * Example:
- *
- *   <button data-counter>+</button>
- *
- * A document-level handler can detect data-counter
- * and perform the behavior.
- *
- * ============================================================================
- * DOCUMENT HANDLERS
- * ============================================================================
- *
- * For document-level delegation, prefer:
- *
- *   document.addEventListener("click", handler);
- *
- * instead of:
- *
- *   document.onclick = handler;
- *
- * because onclick can be overwritten by another handler.
- *
- * ============================================================================
- * LIMITATIONS
- * ============================================================================
- *
- * Event Delegation requires an event that bubbles.
- *
- * Some events do not bubble.
- *
- * Also, stopPropagation() in lower-level handlers
- * can prevent the delegated handler from receiving the event.
+ * Keeping semantic HTML preserves browser features
+ * and improves accessibility.
  *
  * ============================================================================
  * MAIN MENTAL MODEL
  * ============================================================================
  *
- * Child event
+ * User Action
  *     ↓
- * Event Bubbling
+ * Event
  *     ↓
- * Parent handler
+ * Event Handler
  *     ↓
- * event.target
- *     ↓
- * matches() / closest()
- *     ↓
- * Handle the correct element
+ * Default Browser Action
  *
- * ============================================================================
- * MAIN BENEFITS
- * ============================================================================
+ * preventDefault()
+ * → Cancel the default action.
  *
- * → Fewer event handlers
- * → Less code
- * → Works naturally with dynamic elements
- * → Easier to add/remove many similar elements
- * → Foundation for many dynamic UI patterns
+ * defaultPrevented
+ * → Check whether it was cancelled.
+ *
+ * passive: true
+ * → Tell the browser we won't cancel the action.
  *
  * ============================================================================
  */
