@@ -1,190 +1,188 @@
 /**
 
 * ============================================================================
-* POINTER EVENTS
+* ON SCROLL
 * ============================================================================
 *
-* Pointer Events provide one API for:
-*
-* Mouse
-* Touch
-* Pen / Stylus
+* The "scroll" event fires when an element or the page is scrolled.
 *
 * ============================================================================
-* MAIN EVENTS
+* SCROLL EVENT
 * ============================================================================
 *
-* pointerdown  → pointer pressed
-* pointerup    → pointer released
-* pointermove  → pointer moved
-* pointerover  → pointer enters / moves over
-* pointerout   → pointer leaves
-* pointerenter → pointer enters
-* pointerleave → pointer leaves
+* For page scrolling:
 *
-* Additional events:
+* window.addEventListener("scroll", handler);
 *
-* pointercancel
-* gotpointercapture
-* lostpointercapture
+* For an element's internal scrolling:
+*
+* element.addEventListener("scroll", handler);
 *
 * ============================================================================
-* POINTER PROPERTIES
+* PAGE SCROLL POSITION
 * ============================================================================
 *
-* event.pointerId
-* → Unique identifier for the current pointer.
+* window.scrollX
+* window.scrollY
 *
-* Useful for Multi-touch.
+* → Current horizontal / vertical scroll position of the page.
 *
-* event.pointerType
-* → "mouse", "touch", or "pen".
+* Legacy aliases:
 *
-* event.isPrimary
-* → true for the primary pointer.
-*
-* Other device-specific properties:
-*
-* pressure
-* width
-* height
-* tiltX
-* tiltY
-* twist
+* window.pageXOffset
+* window.pageYOffset
 *
 * ============================================================================
-* MULTI-TOUCH
+* ELEMENT SCROLL POSITION
 * ============================================================================
 *
-* Each touching finger gets its own pointerId.
+* element.scrollLeft
+* element.scrollTop
 *
-* Example:
+* → Current scroll position inside an element.
 *
-* Finger 1 → pointerId: 1
-* Finger 2 → pointerId: 2
+* Mental model:
 *
-* isPrimary is true for the first/primary pointer.
+* window.scrollY
+* → page scroll
+*
+* element.scrollTop
+* → element's internal scroll
 *
 * ============================================================================
-* POINTERCANCEL
+* SCROLL METHODS
 * ============================================================================
 *
-* pointercancel fires when the browser or device
-* interrupts the current pointer interaction.
+* window.scrollTo(x, y)
+* → Scroll to an absolute document position.
 *
-* For custom drag interactions, prevent browser takeover:
+* window.scrollTo(0, 500);
 *
-* element.ondragstart = () => false;
+* window.scrollBy(x, y)
+* → Scroll relative to the current position.
 *
-* And for touch interactions:
+* window.scrollBy(0, 100);
 *
-* .draggable {
+* Both also support options:
+*
+* window.scrollTo({
 * ```
-    touch-action: none;
+    top: 0,
   ```
-* }
-*
-* ============================================================================
-* POINTER CAPTURE
-* ============================================================================
-*
-* setPointerCapture(pointerId)
-*
-* → Captures future pointer events for that pointer
-* and sends them to the element.
-*
-* Example:
-*
-* element.setPointerCapture(event.pointerId);
-*
-* After capture, pointer events continue to target the element
-* even if the pointer moves outside it.
-*
-* ============================================================================
-* RELEASE CAPTURE
-* ============================================================================
-*
-* releasePointerCapture(pointerId)
-*
-* → Explicitly releases pointer capture.
-*
-* Capture is also automatically released on:
-*
-* pointerup
-* pointercancel
-* element removal
-*
-* ============================================================================
-* DRAG & DROP
-* ============================================================================
-*
-* Pointer capture simplifies dragging:
-*
-* pointerdown
 * ```
-    ↓
+    behavior: "smooth"
   ```
-* setPointerCapture(pointerId)
-* ```
-    ↓
-  ```
-* pointermove
-* ```
-    ↓
-  ```
-* pointermove
-* ```
-    ↓
-  ```
-* pointerup
-*
-* We don't need to attach pointermove to document.
+* });
 *
 * ============================================================================
-* CAPTURE EVENTS
+* SCROLL INTO VIEW
 * ============================================================================
 *
-* gotpointercapture
-* → Pointer capture was established.
+* element.scrollIntoView();
 *
-* lostpointercapture
-* → Pointer capture was released.
+* → Scrolls the page so the element becomes visible.
+*
+* Smooth scrolling:
+*
+* element.scrollIntoView({
+* ```
+    behavior: "smooth"
+  ```
+* });
+*
+* ============================================================================
+* VIEWPORT VS DOCUMENT
+* ============================================================================
+*
+* getBoundingClientRect()
+* → Element coordinates relative to the viewport.
+*
+* Document coordinate:
+*
+* const rect = element.getBoundingClientRect();
+*
+* const top = rect.top + window.scrollY;
+* const left = rect.left + window.scrollX;
+*
+* Mental model:
+*
+* document position
+* =
+* viewport position + scroll
+*
+* ============================================================================
+* REACHING THE BOTTOM
+* ============================================================================
+*
+* The bottom of the viewport can be calculated with:
+*
+* window.scrollY + window.innerHeight
+*
+* Full document height:
+*
+* document.documentElement.scrollHeight
+*
+* Therefore:
+*
+* window.scrollY + window.innerHeight
+* ```
+    >= document.documentElement.scrollHeight
+  ```
+*
+* means the user has reached the bottom.
+*
+* ============================================================================
+* PERFORMANCE
+* ============================================================================
+*
+* scroll can fire very frequently.
+*
+* Avoid expensive work inside the scroll handler.
+*
+* Heavy DOM operations and layout calculations
+* can cause performance problems.
+*
+* ============================================================================
+* COMMON USE CASES
+* ============================================================================
+*
+* → Back to top button
+* → Sticky UI
+* → Infinite scrolling
+* → Lazy loading
+* → Scroll progress
+* → Show/hide elements based on scroll position
 *
 * ============================================================================
 * MAIN MENTAL MODEL
 * ============================================================================
 *
-* Mouse Events
-* → Mouse only.
+* scroll
+* → scrolling happened
 *
-* Pointer Events
-* → Mouse + Touch + Pen.
+* window.scrollY
+* → page scroll position
 *
-* pointerId
-* → Identify a specific pointer.
+* element.scrollTop
+* → element scroll position
 *
-* pointerType
-* → Identify the input device.
+* scrollTo()
+* → absolute position
 *
-* isPrimary
-* → Identify the primary pointer.
+* scrollBy()
+* → relative movement
 *
-* pointercancel
-* → Interaction was interrupted.
+* scrollIntoView()
+* → make an element visible
 *
-* setPointerCapture()
-* → Keep receiving events for a pointer.
+* getBoundingClientRect()
+* → viewport coordinates
 *
-* touch-action: none
-* → Prevent unwanted browser touch gestures.
+* scrollHeight
+* → full scrollable content height
 *
-* Pointer Events are especially useful for:
-*
-* Drag & Drop
-* Sliders
-* Touch interfaces
-* Multi-touch interactions
-* Stylus input
+* innerHeight
+* → viewport height
 *
 * ============================================================================
   */

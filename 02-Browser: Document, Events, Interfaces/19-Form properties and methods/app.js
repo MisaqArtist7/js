@@ -1,190 +1,177 @@
 /**
 
 * ============================================================================
-* POINTER EVENTS
+* KEYBOARD EVENTS
 * ============================================================================
 *
-* Pointer Events provide one API for:
-*
-* Mouse
-* Touch
-* Pen / Stylus
+* Keyboard events let us detect keyboard interactions.
 *
 * ============================================================================
 * MAIN EVENTS
 * ============================================================================
 *
-* pointerdown  → pointer pressed
-* pointerup    → pointer released
-* pointermove  → pointer moved
-* pointerover  → pointer enters / moves over
-* pointerout   → pointer leaves
-* pointerenter → pointer enters
-* pointerleave → pointer leaves
+* keydown
+* → Fires when a key is pressed.
 *
-* Additional events:
+* keyup
+* → Fires when a key is released.
 *
-* pointercancel
-* gotpointercapture
-* lostpointercapture
+* A held key can trigger repeated keydown events.
+*
+* event.repeat
+* → true when keydown is caused by auto-repeat.
 *
 * ============================================================================
-* POINTER PROPERTIES
+* KEY VS CODE
 * ============================================================================
 *
-* event.pointerId
-* → Unique identifier for the current pointer.
+* event.key
+* → The logical value / meaning of the key.
 *
-* Useful for Multi-touch.
+* Examples:
 *
-* event.pointerType
-* → "mouse", "touch", or "pen".
+* "a"
+* "A"
+* "Enter"
+* "ArrowLeft"
 *
-* event.isPrimary
-* → true for the primary pointer.
+* event.code
+* → The physical key position.
 *
-* Other device-specific properties:
+* Examples:
 *
-* pressure
-* width
-* height
-* tiltX
-* tiltY
-* twist
+* "KeyA"
+* "Enter"
+* "ArrowLeft"
+* "ShiftLeft"
 *
-* ============================================================================
-* MULTI-TOUCH
-* ============================================================================
+* Mental model:
 *
-* Each touching finger gets its own pointerId.
-*
-* Example:
-*
-* Finger 1 → pointerId: 1
-* Finger 2 → pointerId: 2
-*
-* isPrimary is true for the first/primary pointer.
+* key  → what key/value was produced?
+* code → which physical key was pressed?
 *
 * ============================================================================
-* POINTERCANCEL
+* KEYBOARD LAYOUT
 * ============================================================================
 *
-* pointercancel fires when the browser or device
-* interrupts the current pointer interaction.
+* Use event.key when the actual character/value matters.
 *
-* For custom drag interactions, prevent browser takeover:
+* Use event.code when the physical key matters,
+* for example in keyboard controls or games.
 *
-* element.ondragstart = () => false;
+* ============================================================================
+* MODIFIER KEYS
+* ============================================================================
 *
-* And for touch interactions:
+* Keyboard events provide modifier states:
 *
-* .draggable {
+* event.shiftKey
+* event.ctrlKey
+* event.altKey
+* event.metaKey
+*
+* They return true / false.
+*
+* ============================================================================
+* DEFAULT ACTION
+* ============================================================================
+*
+* Keyboard events can trigger browser default actions.
+*
+* Examples:
+*
+* character key → inserts text
+* PageDown      → scrolls page
+* Ctrl + S      → browser save action
+*
+* Cancel the default action with:
+*
+* event.preventDefault();
+*
+* ============================================================================
+* INPUT EVENTS
+* ============================================================================
+*
+* Do NOT use keydown to detect every change to an input's value.
+*
+* Input can change through:
+*
+* Keyboard
+* Paste
+* Mobile input
+* IME
+* Speech input
+*
+* Use:
+*
+* input.addEventListener("input", handler);
+*
+* input
+* → fires when the actual value changes.
+*
+* ============================================================================
+* DEPRECATED KEYBOARD APIS
+* ============================================================================
+*
+* Avoid legacy properties/events such as:
+*
+* keyCode
+* charCode
+* which
+* keypress
+*
+* Prefer:
+*
+* event.key
+* event.code
+*
+* ============================================================================
+* HOTKEYS
+* ============================================================================
+*
+* Modifier-based shortcut:
+*
+* if (event.ctrlKey && event.key === "s") {
 * ```
-    touch-action: none;
+    // action
   ```
 * }
 *
-* ============================================================================
-* POINTER CAPTURE
-* ============================================================================
+* For multiple simultaneously pressed keys,
+* a Set can track the currently pressed keys.
 *
-* setPointerCapture(pointerId)
+* const pressed = new Set();
 *
-* → Captures future pointer events for that pointer
-* and sends them to the element.
-*
-* Example:
-*
-* element.setPointerCapture(event.pointerId);
-*
-* After capture, pointer events continue to target the element
-* even if the pointer moves outside it.
-*
-* ============================================================================
-* RELEASE CAPTURE
-* ============================================================================
-*
-* releasePointerCapture(pointerId)
-*
-* → Explicitly releases pointer capture.
-*
-* Capture is also automatically released on:
-*
-* pointerup
-* pointercancel
-* element removal
-*
-* ============================================================================
-* DRAG & DROP
-* ============================================================================
-*
-* Pointer capture simplifies dragging:
-*
-* pointerdown
-* ```
-    ↓
-  ```
-* setPointerCapture(pointerId)
-* ```
-    ↓
-  ```
-* pointermove
-* ```
-    ↓
-  ```
-* pointermove
-* ```
-    ↓
-  ```
-* pointerup
-*
-* We don't need to attach pointermove to document.
-*
-* ============================================================================
-* CAPTURE EVENTS
-* ============================================================================
-*
-* gotpointercapture
-* → Pointer capture was established.
-*
-* lostpointercapture
-* → Pointer capture was released.
+* keydown → pressed.add(event.code)
+* keyup   → pressed.delete(event.code)
 *
 * ============================================================================
 * MAIN MENTAL MODEL
 * ============================================================================
 *
-* Mouse Events
-* → Mouse only.
+* keydown
+* → key pressed
 *
-* Pointer Events
-* → Mouse + Touch + Pen.
+* keyup
+* → key released
 *
-* pointerId
-* → Identify a specific pointer.
+* key
+* → logical key/value
 *
-* pointerType
-* → Identify the input device.
+* code
+* → physical key
 *
-* isPrimary
-* → Identify the primary pointer.
+* repeat
+* → auto-repeat state
 *
-* pointercancel
-* → Interaction was interrupted.
+* Modifier properties
+* → Shift / Ctrl / Alt / Meta state
 *
-* setPointerCapture()
-* → Keep receiving events for a pointer.
+* preventDefault()
+* → cancel browser default action
 *
-* touch-action: none
-* → Prevent unwanted browser touch gestures.
-*
-* Pointer Events are especially useful for:
-*
-* Drag & Drop
-* Sliders
-* Touch interfaces
-* Multi-touch interactions
-* Stylus input
+* input
+* → actual input value changed
 *
 * ============================================================================
   */
