@@ -1,241 +1,199 @@
 /**
 
 * ============================================================================
-* MUTATION OBSERVER
+* SELECTION & RANGE
 * ============================================================================
 *
-* MutationObserver watches the DOM and notifies us when it changes.
+* Range = a logical area inside the DOM.
+* Selection = the actual user selection in the document.
 *
-* Instead of repeatedly checking the DOM:
-*
-* setInterval(() => {
-* ```
-    // check DOM
-  ```
-* }, 100);
-*
-* We can observe mutations directly.
+* Range and Selection are NOT the same thing.
 *
 * ============================================================================
-* CREATE OBSERVER
+* RANGE
 * ============================================================================
 *
-* const observer = new MutationObserver(mutations => {
-* ```
-    console.log(mutations);
-  ```
-* });
+* const range = new Range();
 *
-* The callback receives an array of MutationRecord objects.
+* range.setStart(node, offset);
+* range.setEnd(node, offset);
 *
-* ============================================================================
-* START OBSERVING
-* ============================================================================
+* A Range can start in one Node and end in another Node.
 *
-* observer.observe(element, {
-* ```
-    childList: true,
-  ```
-* ```
-    attributes: true
-  ```
-* });
+* The meaning of `offset` depends on the Node type:
 *
-* observe() defines:
+* Text Node
+* → character position inside the text.
 *
-* → What to observe
-* → Which types of changes to observe
+* Element Node
+* → child index.
 *
 * ============================================================================
-* CHILD LIST
+* RANGE PROPERTIES
 * ============================================================================
 *
-* childList: true
+* startContainer
+* startOffset
+* endContainer
+* endOffset
+* collapsed
+* commonAncestorContainer
 *
-* Detects direct child additions/removals.
-*
-* element.append(child);
-* child.remove();
-*
-* ============================================================================
-* ATTRIBUTES
-* ============================================================================
-*
-* attributes: true
-*
-* Detects attribute changes:
-*
-* element.setAttribute("data-id", "123");
-* element.classList.add("active");
+* `collapsed === true`
+* → start and end point to the same position.
 *
 * ============================================================================
-* CHARACTER DATA
+* RANGE METHODS
 * ============================================================================
 *
-* characterData: true
+* setStart() / setEnd()
+* → define the range boundaries.
 *
-* Detects changes to Text Nodes.
+* setStartBefore() / setStartAfter()
+* setEndBefore() / setEndAfter()
+* → define boundaries relative to a Node.
 *
-* ============================================================================
-* SUBTREE
-* ============================================================================
+* selectNode()
+* → selects the Node itself.
 *
-* subtree: true
+* selectNodeContents()
+* → selects everything inside the Node.
 *
-* Observes descendants as well as the target element's
-* direct children.
+* collapse()
+* → reduces the Range to a single point.
 *
-* Example:
-*
-* parent
-* ```
-  └── div
-  ```
-* ```
-       └── span
-  ```
-*
-* With subtree: true, changes inside div/span can also
-* be observed.
+* cloneRange()
+* → creates a copy of the Range.
 *
 * ============================================================================
-* MUTATION RECORD
+* MODIFYING RANGE CONTENT
 * ============================================================================
 *
-* Each detected mutation is represented by a MutationRecord.
+* deleteContents()
+* → removes the selected content.
 *
-* Important properties:
+* extractContents()
+* → removes the content and returns it.
 *
-* mutation.type
-* mutation.target
-* mutation.addedNodes
-* mutation.removedNodes
-* mutation.attributeName
+* cloneContents()
+* → copies the content without removing it.
 *
-* type can be:
+* insertNode()
+* → inserts a Node at the Range position.
 *
-* "childList"
-* "attributes"
-* "characterData"
+* surroundContents()
+* → wraps the Range content inside an Element.
 *
-* ============================================================================
-* ATTRIBUTE OPTIONS
-* ============================================================================
-*
-* attributeFilter
-* → Observe only specific attributes.
-*
-* attributeFilter: ["class", "data-id"]
-*
-* attributeOldValue
-* → Include the previous attribute value.
-*
-* attributeOldValue: true
-*
-* Then:
-*
-* mutation.oldValue
+* `extractContents()` and `cloneContents()`
+* usually return a DocumentFragment.
 *
 * ============================================================================
-* CALLBACK TIMING
+* SELECTION
 * ============================================================================
 *
-* MutationObserver callbacks are not executed directly in the
-* middle of the DOM mutation.
+* Selection represents the actual selection in the document.
 *
-* Simplified model:
+* const selection = document.getSelection();
 *
-* DOM mutation
-* ```
-    ↓
-  ```
-* MutationRecord
-* ```
-    ↓
-  ```
-* queue
-* ```
-    ↓
-  ```
-* observer callback
+* To put a Range into the current Selection:
 *
-* Multiple mutations can therefore be delivered together.
+* selection.removeAllRanges();
+* selection.addRange(range);
 *
 * ============================================================================
-* DISCONNECT
+* SELECTION PROPERTIES
 * ============================================================================
 *
-* observer.disconnect();
+* anchorNode
+* anchorOffset
+* focusNode
+* focusOffset
+* isCollapsed
+* rangeCount
 *
-* Stops observing mutations.
+* `anchor`
+* → where the selection started.
 *
-* Useful when a component is destroyed or observation
-* is no longer needed.
+* `focus`
+* → where the selection ended.
 *
-* ============================================================================
-* TAKE RECORDS
-* ============================================================================
-*
-* observer.takeRecords();
-*
-* Returns pending MutationRecords that have not yet
-* been delivered to the callback and clears the queue.
-*
-* ============================================================================
-* IMPORTANT DISTINCTION
-* ============================================================================
-*
-* MutationObserver observes DOM changes.
-*
-* It does NOT observe ordinary JavaScript state changes.
-*
-* let count = 0;
-* count++;
-*
-* MutationObserver does not care about this.
-*
-* But:
-*
-* element.textContent = "Hello";
-*
-* is a DOM mutation and can be observed.
+* Unlike Range, Selection has a direction.
 *
 * ============================================================================
-* MAIN MENTAL MODEL
+* GET SELECTED TEXT
 * ============================================================================
 *
-* MutationObserver
-* → watch DOM changes
+* document.getSelection().toString();
 *
-* observe()
-* → start observing
+* To preserve the DOM structure:
 *
-* childList
-* → children added/removed
+* range.cloneContents();
 *
-* attributes
-* → attributes changed
+* ============================================================================
+* SELECTION EVENTS
+* ============================================================================
 *
-* characterData
-* → text node changed
+* selectionchange
+* → fires when the document selection changes.
 *
-* subtree
-* → observe descendants
+* selectstart
+* → fires when selection starts.
 *
-* MutationRecord
-* → information about a mutation
+* ============================================================================
+* INPUT / TEXTAREA
+* ============================================================================
 *
-* addedNodes
-* → added nodes
+* Input and textarea have their own selection API.
 *
-* removedNodes
-* → removed nodes
+* input.selectionStart
+* input.selectionEnd
+* input.selectionDirection
 *
-* attributeName
-* → changed attribute
+* input.select()
+* → selects the entire value.
 *
-* disconnect()
-* → stop observing
+* input.setSelectionRange(start, end)
+* → selects a specific text range.
 *
+* input.setRangeText(...)
+* → replaces part of the input value.
+*
+* If:
+*
+* selectionStart === selectionEnd
+*
+* nothing is selected; the position represents the cursor.
+*
+* ============================================================================
+* CSS
+* ============================================================================
+*
+* user-select: none;
+*
+* → prevents normal text selection from starting on the element.
+*
+* ============================================================================
+* MENTAL MODEL
+* ============================================================================
+*
+* Range
+* → a logical region inside the DOM.
+*
+* Selection
+* → the actual document selection.
+*
+* Range
+* → setStart / setEnd
+* → selectNode / selectNodeContents
+* → delete / extract / clone / insert
+*
+* Selection
+* → addRange / removeAllRanges
+* → getRangeAt
+* → anchor / focus
+*
+* Input / Textarea
+* → selectionStart / selectionEnd
+* → select / setSelectionRange / setRangeText
 * ============================================================================
   */
